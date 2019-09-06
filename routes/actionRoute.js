@@ -4,7 +4,7 @@ const express = require("express");
 
 const router = express.Router();
 
-// const projectDB = require("../data/helpers/projectModel");
+const projectDB = require("../data/helpers/projectModel");
 const actionDB = require("../data/helpers/actionModel");
 
 // GET to /actions
@@ -13,6 +13,9 @@ router.get("/", (request, response) => {
   actionDB
     .get()
     .then(getActions => {
+      // getprojs
+      // compare projs
+      // return those in both lists
       response.status(200).json(getActions);
     })
     .catch(error => {
@@ -41,6 +44,7 @@ router.post(
   "/",
   validateActions,
   validateDescriptionLength,
+  validateExistingProjectId,
   (request, response) => {
     const body = request.body;
     console.log(body);
@@ -62,6 +66,7 @@ router.put(
   validateActions,
   validateActionId,
   validateDescriptionLength,
+  validateExistingProjectId,
   (request, response) => {
     const { id } = request.params;
     const body = request.body;
@@ -133,6 +138,25 @@ function validateActionId(request, response, next) {
         next();
       } else {
         response.status(400).json({ message: "action id not found" });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      response.status(500).json({ message: "failed validation request" });
+    });
+}
+
+// use getProjectActions() to get project id ?
+function validateExistingProjectId(request, response, next) {
+  const { project_id } = request.body.project_id;
+  projectDB
+    .get(project_id)
+    .then(projectId => {
+      console.log("project id exists", projectId);
+      if (projectId) {
+        next();
+      } else {
+        response.status(400).json({ message: "project id does not exist" });
       }
     })
     .catch(error => {
