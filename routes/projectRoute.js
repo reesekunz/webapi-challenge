@@ -23,7 +23,7 @@ router.get("/", (request, response) => {
 
 // GET w/ dynamic id to projects/:id
 
-router.get("/:id", (request, response) => {
+router.get("/:id", validateProjectId, (request, response) => {
   const { id } = request.params;
 
   projectDB
@@ -68,7 +68,7 @@ router.post("/", validateProject, (request, response) => {
 
 // PUT to /projects/:id
 
-router.put("/:id", validateProject, (request, response) => {
+router.put("/:id", validateProject, validateProjectId, (request, response) => {
   const { id } = request.params;
   const body = request.body;
   projectDB
@@ -83,7 +83,7 @@ router.put("/:id", validateProject, (request, response) => {
 
 // DELETE to /projects/:id
 
-router.delete("/:id", (request, response) => {
+router.delete("/:id", validateProjectId, (request, response) => {
   const { id } = request.params;
   projectDB
     .remove(id)
@@ -108,6 +108,24 @@ function validateProject(request, response, next) {
     response.status(400).json({ message: "description is required" });
   }
   next();
+}
+
+function validateProjectId(request, response, next) {
+  const { id } = request.params;
+  projectDB
+    .get(id)
+    .then(projectID => {
+      console.log("project id validation success", projectID);
+      if (projectID) {
+        next();
+      } else {
+        response.status(400).json({ message: "project id not found" });
+      }
+    })
+    .catch(error => {
+      console.log(error);
+      response.status(500).json({ message: "failed validation request" });
+    });
 }
 
 module.exports = router;
