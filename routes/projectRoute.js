@@ -22,6 +22,19 @@ router.get("/", (request, response) => {
 
 // GET w/ dynamic id to projects/:id
 
+router.get("/:id", (request, response) => {
+  const { id } = request.params;
+
+  projectDB
+    .get(id)
+    .then(getProjects => {
+      response.status(200).json(getProjects);
+    })
+    .catch(error => {
+      response.status(500).json({ message: "failed to get projects" });
+    });
+});
+
 // POST to /projects
 
 router.post("/", validateProject, (request, response) => {
@@ -39,9 +52,34 @@ router.post("/", validateProject, (request, response) => {
 
 // PUT to /projects/:id
 
-
+router.put("/:id", validateProject, (request, response) => {
+  const { id } = request.params;
+  const body = request.body;
+  projectDB
+    .update(id, body)
+    .then(success =>
+      response.status(200).json({ message: `project updated for id ${id}` })
+    )
+    .catch(error =>
+      response.status(500).json({ message: "failed to update project" })
+    );
+});
 
 // DELETE to /projects/:id
+
+router.delete("/:id", (request, response) => {
+  const { id } = request.params;
+  projectDB
+    .remove(id)
+    .then(count =>
+      response
+        .status(200)
+        .json({ message: `${count} user deleted for id ${id}` })
+    )
+    .catch(error =>
+      response.status(500).json({ message: "failed to delete user" })
+    );
+});
 
 // middleware functions
 // name and description required
