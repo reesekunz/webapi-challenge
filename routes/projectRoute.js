@@ -1,4 +1,3 @@
-// name and description required
 // helper methods from projectModel.js: get, insert, update, remove, getProjectActions,
 
 const express = require("express");
@@ -27,8 +26,8 @@ router.get("/:id", (request, response) => {
 
   projectDB
     .get(id)
-    .then(getProjects => {
-      response.status(200).json(getProjects);
+    .then(getProject => {
+      response.status(200).json(getProject);
     })
     .catch(error => {
       response.status(500).json({ message: "failed to get projects" });
@@ -74,10 +73,10 @@ router.delete("/:id", (request, response) => {
     .then(count =>
       response
         .status(200)
-        .json({ message: `${count} user deleted for id ${id}` })
+        .json({ message: `${count} project deleted for id ${id}` })
     )
     .catch(error =>
-      response.status(500).json({ message: "failed to delete user" })
+      response.status(500).json({ message: "failed to delete project" })
     );
 });
 
