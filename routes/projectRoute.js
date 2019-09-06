@@ -1,10 +1,12 @@
 // helper methods from projectModel.js: get, insert, update, remove, getProjectActions,
+// use getProjectActions() to get a project id and return a list of actions for that particular project
 
 const express = require("express");
 
 const router = express.Router();
 
 const projectDB = require("../data/helpers/projectModel");
+// const actionDB = require("../data/helpers/actionModel");
 
 // GET to /projects
 
@@ -34,7 +36,22 @@ router.get("/:id", (request, response) => {
     });
 });
 
-// POST to /projects
+// GET w/ dynamic project id and the actions for that particular project
+
+router.get("/actions/:project_id", (request, response) => {
+  const { project_id } = request.params;
+  projectDB
+    .getProjectActions(project_id)
+    .then(projectActions => {
+      if (projectActions.length === 0) {
+        response.status(404).json({ message: "No actions for that project" });
+      }
+      response.status(200).json(projectActions);
+    })
+    .catch(error => {
+      response.status(500).json({ message: "failed to get project actions" });
+    });
+});
 
 router.post("/", validateProject, (request, response) => {
   const body = request.body;

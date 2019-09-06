@@ -1,11 +1,10 @@
 // helper methods from actionModel.js:  get, insert, update, remove
-// also need to getProjectActions() from projectModel db to get a project id and return a list of actions for that particular project
 
 const express = require("express");
 
 const router = express.Router();
 
-const projectDB = require("../data/helpers/projectModel");
+// const projectDB = require("../data/helpers/projectModel");
 const actionDB = require("../data/helpers/actionModel");
 
 // GET to /actions
